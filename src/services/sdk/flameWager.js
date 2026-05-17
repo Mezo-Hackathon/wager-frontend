@@ -104,7 +104,28 @@ const init = () => {
             const input = { query, variables: request.variables }
             return {
               subscribe: (sink) => {
-                const unsubscribe = wsClient.subscribe(input, sink)
+                const isFunction = typeof sink === 'function';
+                const safeSink = {
+                  next: (val) => {
+                    if (isFunction) sink(val);
+                    else if (sink && typeof sink.next === 'function') sink.next(val);
+                  },
+                  error: (err) => {
+                    console.error("GraphQL Subscription error:", err);
+                    if (!isFunction && sink && typeof sink.error === 'function') {
+                      try {
+                        const cleanError = err instanceof Error ? err : new Error(err?.message || JSON.stringify(err) || "Subscription error");
+                        sink.error(cleanError);
+                      } catch (e) {
+                        console.error("Failed to propagate subscription error to sink:", e);
+                      }
+                    }
+                  },
+                  complete: () => {
+                    if (!isFunction && sink && typeof sink.complete === 'function') sink.complete();
+                  }
+                };
+                const unsubscribe = wsClient.subscribe(input, safeSink)
                 return { unsubscribe }
               },
             }
