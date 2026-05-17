@@ -80,8 +80,8 @@ export default defineComponent({
 		}
 
 		onMounted(() => {
-			if (address.value.length !== 36 || (!isMyProfile.value && accountStore.pkh == address.value)) {
-				router.push("/profile")
+			if (!address.value || (address.value.length !== 42 && address.value.length !== 36)) {
+				isProfileLoaded.value = true
 				return
 			}
 
@@ -91,6 +91,15 @@ export default defineComponent({
 		watch(router.currentRoute, () => {
 			getUserData()
 		})
+
+		watch(
+			() => address.value,
+			() => {
+				if (address.value && (address.value.length === 42 || address.value.length === 36)) {
+					getUserData()
+				}
+			},
+		)
 
 		const handleCopyAddress = () => {
 			toClipboard(address.value)
@@ -310,7 +319,7 @@ export default defineComponent({
 			<router-link to="/">
 				<Button type="secondary" size="small">
 					<Icon name="spark" size="14" />
-					Explore Juster
+					Explore Wager
 				</Button>
 			</router-link>
 

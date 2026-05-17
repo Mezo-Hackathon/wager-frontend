@@ -12,22 +12,25 @@ import {
   USER_WITHDRAWALS_QUERY,
   USER_STATISTICS_QUERY,
   LEADERBOARD_QUERY,
+  LEADERBOARD_BETTORS_QUERY,
+  LEADERBOARD_PROVIDERS_QUERY,
   USER_SUBSCRIPTION
 } from "@/graphql/users"
 
 /**
  * Fetch user by address
- * @param {string} address - User wallet address
+ * @param {Object} params
+ * @param {string} params.address - User wallet address
  * @returns {Promise<Object|null>} User object or null
  */
-export const fetchUser = async (address) => {
+export const fetchUser = async ({ address }) => {
   try {
     if (!address) {
       throw new Error("Address is required")
     }
 
     const data = await executeQuery(USER_BY_ADDRESS_QUERY, { address })
-    return data?.usersByPk || null
+    return data?.userByPk || null
   } catch (error) {
     console.error(
       `Error fetching user ${address}: ${error.name}: ${error.message}`
@@ -48,7 +51,7 @@ export const fetchUserWithPositions = async (address) => {
     }
 
     const data = await executeQuery(USER_WITH_POSITIONS_QUERY, { address })
-    return data?.usersByPk || null
+    return data?.userByPk || null
   } catch (error) {
     console.error(
       `Error fetching user positions ${address}: ${error.name}: ${error.message}`
@@ -102,18 +105,20 @@ export const fetchUserStatistics = async (address) => {
 }
 
 /**
- * Fetch leaderboard (top users by winnings)
+ * Fetch leaderboard (top users by winnings or liquidity)
  * @param {Object} [params]
  * @param {number} [params.limit] - Max number of users
- * @returns {Promise<Array>} Array of users sorted by winnings
+ * @param {string} [params.type] - Leaderboard type ('bettors' or 'providers')
+ * @returns {Promise<Array>} Array of users
  */
-export const fetchLeaderboard = async ({ limit = 20 } = {}) => {
+export const fetchLeaderboard = async ({ limit = 20, type = 'bettors' } = {}) => {
   try {
-    const data = await executeQuery(LEADERBOARD_QUERY, { limit })
-    return data?.users || []
+    const query = type === 'providers' ? LEADERBOARD_PROVIDERS_QUERY : LEADERBOARD_BETTORS_QUERY
+    const data = await executeQuery(query, { limit })
+    return data?.user || []
   } catch (error) {
     console.error(
-      `Error fetching leaderboard: ${error.name}: ${error.message}`
+      `Error fetching leaderboard (${type}): ${error.name}: ${error.message}`
     )
     return []
   }
@@ -128,7 +133,7 @@ export const fetchLeaderboard = async ({ limit = 20 } = {}) => {
 export const subscribeToUser = (address, onUpdate) => {
   try {
     if (!address) {
-      return { unsubscribe: () => {} }
+      return { unsubscribe: () => { } }
     }
 
     if (typeof onUpdate !== 'function') {
@@ -137,7 +142,7 @@ export const subscribeToUser = (address, onUpdate) => {
 
     if (!flameWager.gql) {
       console.warn("GraphQL client not initialized")
-      return { unsubscribe: () => {} }
+      return { unsubscribe: () => { } }
     }
 
     // Use Wonka pipe and subscribe for URQL subscriptions
@@ -149,8 +154,8 @@ export const subscribeToUser = (address, onUpdate) => {
           return
         }
 
-        if (result?.data?.usersByPk) {
-          onUpdate(result.data.usersByPk)
+        if (result?.data?.userByPk) {
+          onUpdate(result.data.userByPk)
         }
       })
     )
@@ -160,6 +165,6 @@ export const subscribeToUser = (address, onUpdate) => {
     console.error(
       `Error subscribing to user ${address}: ${error.name}: ${error.message}`
     )
-    return { unsubscribe: () => {} }
+    return { unsubscribe: () => { } }
   }
 }

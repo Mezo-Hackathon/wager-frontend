@@ -67,7 +67,7 @@ const showMobileMenu = ref(false)
 /** hardcoded active links */
 const isActive = (linkName) => {
 	if (linkName === "Browse") {
-		if (["Explore", "Events", "Markets", "Ranking", "Market", "Event", "Liquidity Pools", "Liquidity Pool"].includes(route.name))
+		if (["Explore", "Events", "Markets", "Ranking", "Rating", "Market", "Event", "Liquidity Pools", "Liquidity Pool"].includes(route.name))
 			return true
 	}
 

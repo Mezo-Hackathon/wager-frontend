@@ -9,7 +9,7 @@ import { gql } from '@urql/core'
  */
 export const USER_BY_ADDRESS_QUERY = `
   query UserByAddress($address: String!) {
-    usersByPk(address: $address) {
+    userByPk(address: $address) {
       address
       totalBetsCount
       totalBetsAmount
@@ -29,7 +29,7 @@ export const USER_BY_ADDRESS_QUERY = `
  */
 export const USER_WITH_POSITIONS_QUERY = `
   query UserWithPositions($address: String!) {
-    usersByPk(address: $address) {
+    userByPk(address: $address) {
       address
       totalBetsCount
       totalBetsAmount
@@ -156,7 +156,7 @@ export const USER_STATISTICS_QUERY = `
  */
 export const LEADERBOARD_QUERY = `
   query Leaderboard($limit: Int!) {
-    users(
+    user(
       order_by: { totalWinnings: desc }
       limit: $limit
       where: { totalBetsCount: { _gt: 0 } }
@@ -164,6 +164,36 @@ export const LEADERBOARD_QUERY = `
       address
       totalBetsCount
       totalBetsAmount
+      totalWinnings
+    }
+  }
+`
+
+export const LEADERBOARD_BETTORS_QUERY = `
+  query LeaderboardBettors($limit: Int!) {
+    user(
+      order_by: { totalWinnings: desc }
+      limit: $limit
+      where: { totalBetsCount: { _gt: 0 } }
+    ) {
+      address
+      totalBetsCount
+      totalBetsAmount
+      totalWinnings
+    }
+  }
+`
+
+export const LEADERBOARD_PROVIDERS_QUERY = `
+  query LeaderboardProviders($limit: Int!) {
+    user(
+      order_by: { totalLiquidityProvided: desc }
+      limit: $limit
+      where: { _or: [ { totalLiquidityProvided: { _gt: 0 } }, { totalPoolDeposits: { _gt: 0 } } ] }
+    ) {
+      address
+      totalLiquidityProvided
+      totalPoolDeposits
       totalWinnings
     }
   }
@@ -178,7 +208,7 @@ export const LEADERBOARD_QUERY = `
  */
 export const USER_SUBSCRIPTION = `
   subscription UserSubscription($address: String!) {
-    usersByPk(address: $address) {
+    userByPk(address: $address) {
       address
       totalBetsCount
       totalBetsAmount

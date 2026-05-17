@@ -5,7 +5,7 @@
 import { ref, onMounted, onUnmounted, computed, watch } from "vue"
 import { useMeta } from "vue-meta"
 import { useRoute } from "vue-router"
-import { makeSummaryPosition } from "@juster-finance/sdk"
+import { makeSummaryPosition } from "@/services/sdk/estimators"
 import BN from "bignumber.js"
 
 /**
@@ -131,10 +131,11 @@ const populatePool = async () => {
 
 	setupSubToStates()
 
-	for (const index in pools.value) {
-		if (!Object.hasOwnProperty.call(pools.value, index)) return
-		const pool = pools.value[index]
-		poolsAPY.value[pool.address] = (await juster.pools[pool.address].getAPY()).toNumber()
+	for (const p of pools.value) {
+		const poolInstrument = juster.pools[p.address]
+		if (poolInstrument) {
+			poolsAPY.value[p.address] = (await poolInstrument.getAPY()).toNumber()
+		}
 	}
 }
 
@@ -257,7 +258,7 @@ const showAnimation = ref(false)
 onMounted(() => {
 	showAnimation.value = true
 
-	if (Object.keys(juster.pools).length && pool.value) {
+	if (juster.pools[route.params.address] && pool.value) {
 		init()
 	}
 })
@@ -346,12 +347,13 @@ watch(
 
 /** Wait for a long initialisation of the pool */
 watch(
-	() => pool.value,
-	() => {
-		if (!isInited.value) {
+	[() => juster.pools[route.params.address], () => pool.value],
+	([poolInstrument, poolData]) => {
+		if (poolInstrument && poolData && !isInited.value) {
 			init()
 		}
 	},
+	{ immediate: true }
 )
 
 /** Meta */

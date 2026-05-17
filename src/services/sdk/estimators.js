@@ -39,7 +39,11 @@ export function calculateAPY(
   const annualDynamics = new BigNumber(
     Math.pow(priceDynamics.toNumber(), frequencyY.toNumber())
   );
-  return annualDynamics.minus(1);
+  const apy = annualDynamics.minus(1);
+  if (apy.lt(0) || apy.isNaN()) {
+    return new BigNumber(0);
+  }
+  return apy;
 }
 
 export function calculateMean(values) {

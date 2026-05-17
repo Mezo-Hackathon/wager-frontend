@@ -6,13 +6,45 @@
 import { flameWager } from "@/services/sdk"
 import { pipe, subscribe } from "wonka"
 import { executeQuery } from "./graphql"
-import { 
+import {
   USER_POSITIONS_FOR_WITHDRAW_QUERY,
   USER_ALL_POSITIONS_QUERY,
+  FETCH_USER_UNIFIED_POSITIONS_QUERY,
   USER_ACTIVE_POSITIONS_QUERY,
   EVENT_USER_POSITION_QUERY,
   WON_BETS_SUBSCRIPTION
 } from "@/graphql/positions"
+
+
+/**
+ * Fetch all positions for a user (bets and liquidity)
+ * @param {Object} params
+ * @param {string} params.address - User wallet address
+ * @returns {Promise<Array>} Array of all user positions
+ */
+export const fetchAllUserPositions = async ({ address }) => {
+  try {
+    if (!address) {
+      throw new Error("Address is required")
+    }
+
+    const lowerAddress = address.toLowerCase()
+    const data = await executeQuery(USER_ALL_POSITIONS_QUERY, { address: lowerAddress, limit: 1000 })
+    
+    const bets = data?.bet || []
+    const deposits = data?.deposit || []
+
+    return [
+      ...bets.map(b => ({ ...b, type: "bet" })),
+      ...deposits.map(lp => ({ ...lp, type: "liquidity" })),
+    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+  } catch (error) {
+    console.error(
+      `Error during fetching all user positions ${address}: ${error.name}: ${error.message}`
+    )
+    return []
+  }
+}
 
 /**
  * Fetch user positions for withdrawal (winning positions that haven't been withdrawn)
@@ -28,21 +60,21 @@ export const fetchUserPositionsForWithdraw = async ({ address }) => {
 
     const lowerAddress = address.toLowerCase()
     const data = await executeQuery(USER_POSITIONS_FOR_WITHDRAW_QUERY, { address: lowerAddress })
-    
+
     const bets = data?.bet || []
     const deposits = data?.deposit || []
 
     // Combine and return in a unified format for the UI
     const positions = [
-      ...bets.map(b => ({ 
-        ...b, 
+      ...bets.map(b => ({
+        ...b,
         type: "bet",
         value: b.payout || b.amount // UI expects 'value' for withdrawal amount
       })),
-      ...deposits.map(lp => ({ 
-        ...lp, 
+      ...deposits.map(lp => ({
+        ...lp,
         type: "liquidity",
-        value: lp.amountAboveEq 
+        value: lp.amountAboveEq
       })),
     ]
 
@@ -70,7 +102,7 @@ export const fetchUserPositions = async ({ address, limit = 100 }) => {
 
     const lowerAddress = address.toLowerCase()
     const data = await executeQuery(USER_ALL_POSITIONS_QUERY, { address: lowerAddress, limit })
-    
+
     const bets = data?.bet || []
     const deposits = data?.deposit || []
 
@@ -103,7 +135,7 @@ export const fetchActivePositions = async ({ address }) => {
 
     const lowerAddress = address.toLowerCase()
     const data = await executeQuery(USER_ACTIVE_POSITIONS_QUERY, { address: lowerAddress })
-    
+
     const bets = data?.bet || []
     const deposits = data?.deposit || []
 
@@ -137,7 +169,7 @@ export const fetchPositionForEvent = async ({ address, eventId }) => {
 
     const lowerAddress = address.toLowerCase()
     const data = await executeQuery(EVENT_USER_POSITION_QUERY, { address: lowerAddress, eventId })
-    
+
     const bets = data?.bet || []
     const deposits = data?.deposit || []
 
@@ -180,7 +212,7 @@ export const subscribeToUserPositions = (address, onUpdate) => {
     }
 
     const lowerAddress = address.toLowerCase()
-    
+
     // Use Wonka pipe and subscribe for URQL subscriptions
     const { unsubscribe } = pipe(
       flameWager.gql.subscription(WON_BETS_SUBSCRIPTION, { address: lowerAddress }),
@@ -191,10 +223,10 @@ export const subscribeToUserPositions = (address, onUpdate) => {
         }
 
         const wonBets = result.data?.bet || []
-        onUpdate(wonBets.map(b => ({ 
-          ...b, 
+        onUpdate(wonBets.map(b => ({
+          ...b,
           type: "bet",
-          value: b.payout || b.amount 
+          value: b.payout || b.amount
         })))
       })
     )

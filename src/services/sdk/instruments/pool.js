@@ -1,6 +1,7 @@
 import { markRaw } from "vue"
 import BigNumber from "bignumber.js"
 import { calculateAPY, calculateRiskIndex, calculateUtilization } from "../estimators"
+import { executeQuery } from "@/api/graphql"
 
 export class Pool {
   constructor(address, contract, gqlClient) {
@@ -19,8 +20,6 @@ export class Pool {
    * Get basic pool info from GraphQL
    */
   async getInfo() {
-    if (!this.gql) return null
-
     const query = `
       query GetPoolInfo($address: String!) {
         pool(where: { address: { _eq: $address } }) {
@@ -33,8 +32,8 @@ export class Pool {
       }
     `
     try {
-      const result = await this.gql.query(query, { address: this.address.toLowerCase() }).toPromise()
-      const info = result.data?.pool?.[0]
+      const data = await executeQuery(query, { address: this.address.toLowerCase() })
+      const info = data?.pool?.[0]
       if (!info) {
           // Fallback to contract if not indexed yet
           const name = await this.contract.name()
@@ -105,8 +104,6 @@ export class Pool {
    * Fetch last pool state from GraphQL
    */
   async getLastPoolState() {
-    if (!this.gql) return null
-
     const query = `
       query GetLastPoolState($address: String!) {
         poolState(
@@ -124,8 +121,8 @@ export class Pool {
       }
     `
     try {
-      const result = await this.gql.query(query, { address: this.address.toLowerCase() }).toPromise()
-      const state = result.data?.poolState?.[0]
+      const data = await executeQuery(query, { address: this.address.toLowerCase() })
+      const state = data?.poolState?.[0]
       if (state) {
         return {
           ...state,
@@ -145,11 +142,11 @@ export class Pool {
           }
         }
       `
-      const fallbackResult = await this.gql.query(fallbackQuery, { address: this.address.toLowerCase() }).toPromise()
+      const fallbackData = await executeQuery(fallbackQuery, { address: this.address.toLowerCase() })
       
-      console.log("Fallback query result:", fallbackResult)
+      console.log("Fallback query result:", fallbackData)
 
-      const positions = fallbackResult.data?.poolPosition || []
+      const positions = fallbackData?.poolPosition || []
       
       let totalLiquidity = new BigNumber(0)
       let totalShares = new BigNumber(0)
@@ -183,8 +180,6 @@ export class Pool {
    * Fetch first pool state from GraphQL (used for APY)
    */
   async getFirstPoolState(dateFrom = new Date("2020-01-01")) {
-    if (!this.gql) return null
-
     const query = `
       query GetFirstPoolState($address: String!, $dateFrom: timestamptz!) {
         poolState(
@@ -201,11 +196,11 @@ export class Pool {
       }
     `
     try {
-      const result = await this.gql.query(query, { 
+      const data = await executeQuery(query, { 
         address: this.address.toLowerCase(),
         dateFrom: dateFrom.toISOString()
-      }).toPromise()
-      const state = result.data?.poolState?.[0]
+      })
+      const state = data?.poolState?.[0]
       return state
     } catch (err) {
       console.error("Error fetching first pool state:", err)

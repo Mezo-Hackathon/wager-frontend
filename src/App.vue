@@ -62,8 +62,6 @@ const appStore = useAppStore()
 const marketStore = useMarketStore()
 
 onBeforeMount(async () => {
-	await accountStore.init()
-
 	if (accountStore.isConnected) {
 		setupUser()
 	}

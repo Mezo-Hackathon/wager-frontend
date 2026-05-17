@@ -77,7 +77,7 @@ const handleLogout = () => {
 						@click="handleOpenProfile"
 						align="center"
 						gap="12"
-						:class="[$style.general_link, $style.disabled]"
+						:class="$style.general_link"
 						tabindex="1"
 					>
 						<img

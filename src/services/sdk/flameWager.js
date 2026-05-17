@@ -16,6 +16,7 @@ import {
   subscriptionExchange,
 } from "@urql/core"
 import { createClient as createWSClient } from 'graphql-ws';
+import { print } from 'graphql';
 import { activeRpcNode, NETWORK_TYPE, activeChainConfig, dipdup, contracts } from "@config"
 
 /**
@@ -99,7 +100,8 @@ const init = () => {
         cacheExchange,
         subscriptionExchange({
           forwardSubscription: (request) => {
-            const input = { ...request, query: request.query || '' }
+            const query = typeof request.query === 'string' ? request.query : print(request.query)
+            const input = { query, variables: request.variables }
             return {
               subscribe: (sink) => {
                 const unsubscribe = wsClient.subscribe(input, sink)

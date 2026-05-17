@@ -3,7 +3,7 @@
  * Vendor
  */
 import { ref, onMounted, onUnmounted, computed, watch } from "vue"
-// import { makeSummaryPosition } from "@juster-finance/sdk"
+import { makeSummaryPosition } from "@/services/sdk/estimators"
 import { useMeta } from "vue-meta"
 import BN from "bignumber.js"
 
@@ -120,7 +120,16 @@ const isPopulated = ref(false)
 const poolsStates = ref({})
 const poolsAPY = ref({})
 
-const summaries = ref({})
+const summaries = computed(() => {
+	const res = {}
+	positions.value.forEach((pos) => {
+		const state = poolsStates.value[pos.poolId]
+		if (state) {
+			res[pos.poolId] = makeSummaryPosition(pos, state)
+		}
+	})
+	return res
+})
 
 /**
  * Pool Position
@@ -140,11 +149,9 @@ const entries = ref([])
 const subStates = ref({})
 
 const populatePools = async () => {
-	for (const index in pools.value) {
-		if (!Object.hasOwnProperty.call(pools.value, index)) return
-		const pool = pools.value[index]
-        const poolInstrument = juster.pools[pool.address]
-        if (!poolInstrument) continue
+	for (const pool of pools.value) {
+		const poolInstrument = juster.pools[pool.address]
+		if (!poolInstrument) continue
 
 		poolsStates.value[pool.address] = await poolInstrument.getLastPoolState()
 
@@ -328,7 +335,7 @@ onUnmounted(() => {
 watch(
 	() => contracts.value,
 	() => {
-		if (contracts.value.length > 1 && !isInited.value) {
+		if (contracts.value.length >= 1 && !isInited.value) {
 			init()
 		}
 	},

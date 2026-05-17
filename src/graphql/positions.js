@@ -225,6 +225,40 @@ export const USER_ALL_POSITIONS_QUERY = `
 `
 
 /**
+ * Fetch all positions for a user (unified view)
+ */
+export const FETCH_USER_UNIFIED_POSITIONS_QUERY = `
+  query FetchAllUserPositions($address: String!) {
+    position(
+      where: { userId: { _eq: $address } }
+      order_by: { id: desc }
+    ) {
+      id
+      userId
+      eventId
+      betType
+      amount
+      minimalWinAmount
+      payout
+      isWinner
+      transactionHash
+      timestamp
+      event {
+        id
+        status
+        betsCloseTime
+        measurePeriod
+        totalValueLocked
+        totalLiquidityProvided
+        currencyPair {
+          symbol
+        }
+      }
+    }
+  }
+`
+
+/**
  * Fetch active bets and deposits (NEW or MEASUREMENT_STARTED)
  */
 export const USER_ACTIVE_POSITIONS_QUERY = `

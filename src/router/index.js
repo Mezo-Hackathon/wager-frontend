@@ -46,10 +46,42 @@ const routes = [
     component: () => import("@views/MarketPage.vue"),
   },
   {
+    path: "/rating",
+    name: "Rating",
+    alias: "/rank",
+    component: () => import("@views/LeaderboardPage.vue"),
+  },
+  {
     path: "/markets",
     name: "Markets",
     component: () => import("@views/MarketsPage.vue"),
   },
+  {
+		path: "/profile",
+		name: "MyProfile",
+		beforeEnter: (to, from, next) => {
+			const accountStore = useAccountStore()
+
+			if (to.params.address) {
+				next()
+				return
+			}
+
+			if (accountStore.isLoggined) {
+				next()
+			} else {
+				next({ name: "Explore" })
+			}
+		},
+		component: () => import("@views/ProfilePage.vue"),
+		children: [
+			{
+				path: ":address",
+				name: "Profile",
+				component: () => import("@views/ProfilePage.vue"),
+			},
+		],
+	},
   {
     path: "/withdrawals",
     name: "Withdrawals",

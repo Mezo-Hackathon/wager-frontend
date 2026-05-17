@@ -39,7 +39,6 @@ const browseLinks = ref([
 		title: "Ranking",
 		description: "Compete with other users",
 		url: "/rank",
-		disabled: true,
 	},
 ])
 
