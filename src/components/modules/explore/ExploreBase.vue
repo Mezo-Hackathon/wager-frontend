@@ -28,14 +28,13 @@ import Button from "@ui/Button.vue"
 import { fetchTopEvents } from "@/api/events"
 import {
 	fetchUser,
-	fetchTopBettors,
-	fetchTopLiquidityProviders,
+	fetchLeaderboard,
 } from "@/api/users"
 
 /**
  * Subscriptions
  */
-import { event as eventModel } from "@/graphql/models/events"
+import { event as eventModel } from "@/graphql/models"
 
 /**
  * Store
@@ -105,22 +104,22 @@ const init = async () => {
 	const rawTopEvents = await fetchTopEvents({ limit: 3 })
 	topEvents.value = rawTopEvents.sort((a, b) => b.bets.length - a.bets.length)
 
-	const rawTopProviders = await fetchTopLiquidityProviders()
-	const rawTopBettors = await fetchTopBettors()
+	const rawTopProviders = await fetchLeaderboard({ type: "providers", limit: 3 })
+	const rawTopBettors = await fetchLeaderboard({ type: "bettors", limit: 3 })
 
 	topProviders.value = rawTopProviders.map((el) => {
-		return { address: el.address, value: el.totalProviderReward }
+		return { address: el.address, value: el.totalLiquidityProvided || el.totalPoolDeposits || 0 }
 	})
 	isTopProvidersLoading.value = false
 
 	topBettors.value = rawTopBettors.map((el) => {
-		return { address: el.address, value: el.totalBetsCount }
+		return { address: el.address, value: el.totalBetsCount || 0 }
 	})
 	isTopBettorsLoading.value = false
 }
 
 watch(
-	() => juster.sdk._network,
+	() => juster.network,
 	() => {
 		subToMyPositions.value.unsubscribe()
 		myPositions.value = []

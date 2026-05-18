@@ -10,11 +10,11 @@ import Page from "@base/Page.vue"
  * Module
  */
 import LeaderboardBase from "@modules/leaderboard/LeaderboardBase.vue"
-
+import ExploreBase from "@modules/explore/ExploreBase.vue"
 export default defineComponent({
 	name: "LeaderboardPage",
 
-	components: { Page, LeaderboardBase },
+	components: { Page, LeaderboardBase, ExploreBase },
 })
 </script>
 

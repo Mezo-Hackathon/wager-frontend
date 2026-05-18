@@ -159,19 +159,19 @@ onBeforeUnmount(() => {
 						<router-link to="/pools" :class="$style.link"> Liquidity Pools </router-link>
 					</div>
 
-					<div :class="$style.column">
+					<!-- <div :class="$style.column">
 						<div :class="$style.name">Learn</div>
 						<router-link to="/docs" :class="$style.link">Documentation</router-link>
 						<router-link to="/docs/roadmap" :class="$style.link">Roadmap</router-link>
 						<router-link to="/docs/faq" :class="$style.link">FAQ</router-link>
-					</div>
+					</div> -->
 
-					<div :class="$style.column">
+					<!-- <div :class="$style.column">
 						<div :class="$style.name">Misc</div>
 						<router-link to="/policy" :class="$style.link">Privacy Policy</router-link>
 						<router-link to="/terms" :class="$style.link">Terms of Use</router-link>
 						<router-link to="/sitemap" :class="$style.link">Sitemap</router-link>
-					</div>
+					</div> -->
 				</div>
 			</div>
 
@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
 						<Text size="11" color="support">✦</Text>
 						<Text size="14" weight="500" color="secondary"> &nbsp;&nbsp;Wager&nbsp; </Text>
 						<Text size="14" weight="500" color="tertiary"> Market data provided by&nbsp; </Text>
-						<a href="https://tzkt.io/KT1AdbYiPYb5hDuEuVrfxmFehtnBCXv4Np7r/operations/" target="_blank">
+						<a href="https://explorer.test.mezo.org/address/0xE7168A7f93208c18d74774692cB8014FEA345129?tab=txs" target="_blank">
 							<Text size="14" weight="500" color="secondary"> Pyth Oracle </Text>
 						</a>
 					</Flex>

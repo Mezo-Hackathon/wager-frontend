@@ -288,7 +288,7 @@ watch(
 								<Icon name="bolt" size="16" color="tertiary" />System Status
 							</Button> -->
 
-							<Button size="small" type="tertiary" link="https://discord.gg/FeGDCkHhnB">
+							<Button size="small" type="tertiary" link="https://x.com/wagerAMM">
 								<Icon name="help" size="16" color="tertiary" />Support
 							</Button>
 						</Flex>
@@ -371,7 +371,7 @@ watch(
 								<Icon name="bolt" size="16" color="tertiary" />System Status
 							</Button> -->
 
-							<Button size="small" type="tertiary" link="https://discord.gg/FeGDCkHhnB">
+							<Button size="small" type="tertiary" link="https://x.com/wagerAMM">
 								<Icon name="help" size="16" color="tertiary" />Support
 							</Button>
 						</Flex>
