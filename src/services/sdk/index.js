@@ -8,6 +8,7 @@ import {
   placeBet,
   getContractAddresses,
   approveMUSD,
+  getActiveAccount,
 } from "./flameWager"
 import analytics from "./analytics"
 import { withdraw, withdrawAll } from "./withdraw"
@@ -49,5 +50,6 @@ export {
   initWithSigner,
   analytics,
   withdraw,
-  withdrawAll
+  withdrawAll,
+  getActiveAccount,
 }

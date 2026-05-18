@@ -32,7 +32,7 @@ import Notifications from "@local/Notifications.vue"
 /**
  * Services
  */
-import { flameWager, initPools, currentNetwork } from "@sdk"
+import { flameWager, initPools, currentNetwork, getActiveAccount } from "@sdk"
 import { fetchAllPools, fetchPoolsLines } from "@/api/pools"
 import { watchNetwork } from "@/services/network"
 
@@ -62,9 +62,25 @@ const appStore = useAppStore()
 const marketStore = useMarketStore()
 
 onBeforeMount(async () => {
-	if (accountStore.isConnected) {
+	getActiveAccount().then(async (account) => {
+		if (!account) return
+
+		accountStore.setPkh(account.address)
+		accountStore.updateBalance()
+
 		setupUser()
-	}
+	})
+		
+	// Watch for account change (either from auto-connect or manual connect)
+	watch(
+		() => accountStore.pkh,
+		(pkh) => {
+			if (pkh) {
+				setupUser()
+			}
+		},
+		{ immediate: true }
+	)
 })
 onMounted(async () => {
 	watchNetwork()

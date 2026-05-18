@@ -21,7 +21,7 @@ import CustomLoginModal from "@local/modals/CustomLoginModal.vue"
 /**
  * Services
  */
-import { flameWager as juster, analytics, currentNetwork } from "@sdk"
+import { flameWager as juster, analytics, currentNetwork, getActiveAccount } from "@sdk"
 
 /**
  * Composable
@@ -74,7 +74,8 @@ const handleBeacon = async () => {
 }
 
 const login = () => {
-	juster.sdk._provider.client.getActiveAccount().then(async (account) => {
+	getActiveAccount().then(async (account) => {
+		if (!account) return
 		analytics.log("login", { address: account.address })
 
 		accountStore.pkh = account.address

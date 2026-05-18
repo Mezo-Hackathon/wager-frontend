@@ -8,7 +8,7 @@
  */
 import { computed, reactive, markRaw } from "vue"
 import { ethers } from "ethers"
-import { switchChain } from "@wagmi/core"
+import { switchChain, getAccount } from "@wagmi/core"
 import { createClient } from "@urql/vue"
 import {
   cacheExchange,
@@ -17,7 +17,7 @@ import {
 } from "@urql/core"
 import { createClient as createWSClient } from 'graphql-ws';
 import { print } from 'graphql';
-import { activeRpcNode, NETWORK_TYPE, activeChainConfig, dipdup, contracts } from "@config"
+import { config, activeRpcNode, NETWORK_TYPE, activeChainConfig, dipdup, contracts } from "@config"
 
 /**
  * Services.Constants
@@ -331,6 +331,18 @@ const placeBet = async (eventId, betType, amount, minWinAmount) => {
 // Initialize GraphQL client on load
 init()
 
+/**
+ * Retrieve the active account using Wagmi Core
+ * @returns {Promise<{address: string}|null>}
+ */
+const getActiveAccount = async () => {
+  const account = getAccount(config)
+  if (account && account.isConnected && account.address) {
+    return { address: account.address }
+  }
+  return null
+}
+
 export {
   flameWager,
   currentNetwork,
@@ -341,4 +353,5 @@ export {
   approveMUSD,
   placeBet,
   initWithSigner,
+  getActiveAccount,
 }
