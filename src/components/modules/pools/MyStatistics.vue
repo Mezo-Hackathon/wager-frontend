@@ -125,6 +125,11 @@ const parseProfitAmount = (amount) => {
 		return numberWithSymbol(amount, ",")
 	}
 }
+
+const getPoolName = (poolId, poolObj) => {
+	const poolName = poolObj?.name || pools.value.find((p) => p.address?.toLowerCase() === poolId?.toLowerCase())?.name || "";
+	return parsePoolName(poolName.replace("Juster Pool: ", "").replace("Wager Pool: ", ""));
+}
 </script>
 
 <template>
@@ -156,7 +161,7 @@ const parseProfitAmount = (amount) => {
 						<Flex v-for="position in sortedPositions" direction="column" gap="8">
 							<Flex align="center" justify="between">
 								<Text color="secondary" size="13" weight="600">
-									{{ parsePoolName(position.pool.name.replace("Juster Pool: ", "")) }}
+									{{ getPoolName(position.poolId, position.pool) }}
 								</Text>
 
 								<Flex align="center" gap="8">
@@ -289,7 +294,7 @@ const parseProfitAmount = (amount) => {
 								<Flex align="center" justify="between">
 									<Text color="secondary" size="13" weight="600">
 										{{
-											parsePoolName(pools.find((p) => p.address == summary.poolId).name.replace("Juster Pool: ", ""))
+											getPoolName(summary.poolId, null)
 										}}
 									</Text>
 

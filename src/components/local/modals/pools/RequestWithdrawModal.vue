@@ -235,10 +235,7 @@ const handleCloseRequestFundsWarning = () => {
 						<Flex direction="column" gap="8">
 							<Text size="14" weight="600" color="primary">
 								{{
-									selectedPool.name.replace(
-										"Juster Pool: ",
-										"",
-									)
+									selectedPool?.name ? selectedPool.name.replace("Juster Pool: ", "") : "Unnamed Pool"
 								}}
 							</Text>
 

@@ -65,8 +65,9 @@ watch(
 
 		eventsSearcher.value = new Searcher(events.value, {
 			keySelector: (item) => {
-				return `${item.action.replace("_", " ").toLowerCase()} ${item.affectedEventId} ${
-					item.affectedUserId ? item.affectedUserId : ""
+				const action = item?.action || ""
+				return `${action.replace("_", " ").toLowerCase()} ${item?.affectedEventId || ""} ${
+					item?.affectedUserId ? item.affectedUserId : ""
 				}`
 			},
 			threshold: 0.8,
@@ -157,7 +158,7 @@ const getEventIconByActionName = (action) => {
 				<Flex direction="column" gap="16">
 					<Flex align="center" gap="12">
 						<Text size="14" weight="600" color="primary">
-							{{ parsePoolName(pool.name.replace("Juster Pool: ", "")) }}
+							{{ pool?.name ? parsePoolName(pool.name.replace("Juster Pool: ", "")) : "Unnamed Pool" }}
 						</Text>
 
 						<Text size="12" weight="500" color="support"> ✦ </Text>
@@ -248,7 +249,7 @@ const getEventIconByActionName = (action) => {
 
 								<Flex direction="column" gap="6">
 									<Text size="12" weight="600" color="primary">
-										{{ parsePoolName(pool.name.replace("Juster Pool: ", "")) }}
+										{{ pool?.name ? parsePoolName(pool.name.replace("Juster Pool: ", "")) : "Unnamed Pool" }}
 									</Text>
 
 									<Flex align="center" gap="4" :class="$style.params">

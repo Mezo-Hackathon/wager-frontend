@@ -164,7 +164,7 @@ const getPositionByPool = (pool) => {
 onMounted(() => {
 	poolsSearcher.value = new Searcher(props.pools, {
 		keySelector: (item) => {
-			let { name } = item
+			let name = item?.name || ""
 
 			if (name.includes("MUSD")) {
 				name += " Tezos"

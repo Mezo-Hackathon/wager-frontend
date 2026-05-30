@@ -48,7 +48,7 @@ const apyPosition = computed(() => {
 		<Flex v-if="pool" direction="column" gap="24">
 			<div>
 				<Text size="14" height="18" weight="500" color="tertiary">
-					Pool {{ parsePoolName(pool.name.replace("Juster Pool: ", "")) }} with a current APY has a
+					Pool {{ pool?.name ? parsePoolName(pool.name.replace("Juster Pool: ", "")) : "Unnamed Pool" }} with a current APY has a
 				</Text>
 				<Text size="14" height="18" weight="500" color="secondary">
 					<Icon :name="(riskIndex > 1 && 'warning') || 'checkcircle'" size="12" :color="(riskIndex > 1 && 'red') || 'tertiary'" />

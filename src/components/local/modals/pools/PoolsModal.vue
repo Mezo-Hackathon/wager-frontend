@@ -130,7 +130,7 @@ const handleSelectPool = (pool) => {
 onMounted(() => {
 	poolsSearcher.value = new Searcher(props.pools, {
 		keySelector: (item) => {
-			let { name } = item
+			let name = item?.name || ""
 
 			if (name.includes("MUSD")) {
 				name += " Tezos"
@@ -264,7 +264,7 @@ const handleCloseTestnetWarning = () => {
 						<Flex align="center" gap="20">
 							<Flex direction="column" gap="8">
 								<Text size="14" weight="600" color="primary">
-									{{ parsePoolName(pool.name.replace("Juster Pool: ", "")) }}
+									{{ pool?.name ? parsePoolName(pool.name.replace("Juster Pool: ", "")) : "Unnamed Pool" }}
 								</Text>
 
 								<Flex align="center" gap="8">

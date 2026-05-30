@@ -391,7 +391,7 @@ watch(
 
 							<Flex align="center">
 								<Text size="14" weight="600" color="secondary">
-									{{ parsePoolName(entry.pool.name.replace("Juster Pool: ", "")) }}&nbsp;
+									{{ parsePoolName((pools.find(p => p.address?.toLowerCase() === entry.poolId?.toLowerCase())?.name || entry.pool?.name || "").replace("Juster Pool: ", "")) }}&nbsp;
 								</Text>
 								<Text size="14" weight="600" color="tertiary"> #{{ entry.entryId }} </Text>
 							</Flex>

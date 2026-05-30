@@ -117,7 +117,7 @@ const handleDeposit = async () => {
 				notification: {
 					icon: "warning",
 					title: "The operation was rejected",
-					description: `The deposit to ${props.selectedPool.name} of ${amount.value} MUSD was not accepted`,
+					description: `The deposit to ${props.selectedPool?.name || "pool"} of ${amount.value} MUSD was not accepted`,
 					autoDestroy: true,
 				},
 			})
@@ -161,8 +161,9 @@ const buttonState = computed(() => {
 			disabled: true,
 			type: "secondary",
 		}
+	const poolName = props.selectedPool?.name || "";
 	return {
-		text: `Deposit to ${parsePoolName(props.selectedPool.name.replace("Juster Pool: ", ""))}`,
+		text: `Deposit to ${parsePoolName(poolName.replace("Juster Pool: ", ""))}`,
 		disabled: false,
 		type: "primary",
 	}
@@ -249,7 +250,7 @@ const onKeydown = (e) => {
 				<Icon name="arrow" size="12" color="tertiary" :class="$style.arrow_icon" />
 
 				<Text size="14" weight="600" color="primary">
-					{{ parsePoolName(selectedPool.name.replace("Juster Pool: ", "")) }}
+					{{ selectedPool?.name ? parsePoolName(selectedPool.name.replace("Juster Pool: ", "")) : "Unnamed Pool" }}
 				</Text>
 			</Flex>
 
@@ -262,7 +263,7 @@ const onKeydown = (e) => {
 					<Flex align="center" gap="20">
 						<Flex direction="column" gap="8">
 							<Text size="14" weight="600" color="primary">
-								{{ selectedPool.name.replace("Juster Pool: ", "") }}
+								{{ selectedPool?.name ? selectedPool.name.replace("Juster Pool: ", "") : "Unnamed Pool" }}
 							</Text>
 
 							<Flex align="center" gap="8">
